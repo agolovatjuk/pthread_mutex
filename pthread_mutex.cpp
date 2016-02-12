@@ -18,7 +18,8 @@
 
     Один поток, ожидающий освобождения мьютекса.
     Один поток, ожидающий освобождения спин-блокировки.
-    Два потока, ожидающих освобождения RW-блокировки (один должен ожидать чтения, другой - записи).
+    Два потока, ожидающих освобождения RW-блокировки 
+    (один должен ожидать чтения, другой - записи).
 
 Текст программы должен находиться в файле /home/box/main.cpp
 PID запущенного процесса должен быть сохранен в файле /home/box/main.pid
@@ -29,10 +30,20 @@ PID запущенного процесса должен быть сохране
 #include <unistd.h>
 
 using namespace std;
+int counter = 0;
+pthread_mutex_t mut;
 
-void *helloW(void *args){
-    
-    cout << "Under Mutex..." << endl;
+void *helloMutex(void *args){
+
+    pthread_mutex_lock(&mut);
+
+    counter +=1;    
+    cout << "Under Mutex...start:" << counter << endl;
+//    for(int i=0; i<(0xFFFFFFFF);i++);
+    sleep(5);
+    cout << "Under Mutex...finished:" << counter << endl;
+
+    pthread_mutex_unlock(&mut);
     
     pthread_exit(0);
 }
@@ -42,16 +53,16 @@ void *helloW(void *args){
  */
 int main(int argc, char** argv) {
 
-    pthread_t thread;
-    int t1;
-    pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+    pthread_t thread1, thread2;
+    int t1, t2;
     
-    pthread_mutex_lock(&mut);
-    t1 = pthread_create(&thread, NULL, helloW, NULL);
-    sleep(3);
-    pthread_mutex_unlock(&mut);
+    mut = PTHREAD_MUTEX_INITIALIZER;
+
+    t1 = pthread_create(&thread1, NULL, helloMutex, NULL);
+    t2 = pthread_create(&thread2, NULL, helloMutex, NULL);
     
-    pthread_join(thread, NULL);
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
     
     cout << "Mutex hello!" << endl;
     return 0;
