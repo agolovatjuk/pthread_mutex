@@ -25,14 +25,34 @@ PID запущенного процесса должен быть сохране
  */
 #include <cstdlib>
 #include <iostream>
+#include <pthread.h>
+#include <unistd.h>
 
 using namespace std;
+
+void *helloW(void *args){
+    
+    cout << "Under Mutex..." << endl;
+    
+    pthread_exit(0);
+}
 
 /*
  * 
  */
 int main(int argc, char** argv) {
 
+    pthread_t thread;
+    int t1;
+    pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+    
+    pthread_mutex_lock(&mut);
+    t1 = pthread_create(&thread, NULL, helloW, NULL);
+    sleep(3);
+    pthread_mutex_unlock(&mut);
+    
+    pthread_join(thread, NULL);
+    
     cout << "Mutex hello!" << endl;
     return 0;
 }
