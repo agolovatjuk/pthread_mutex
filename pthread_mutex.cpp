@@ -31,11 +31,17 @@ PID запущенного процесса должен быть сохране
 
 using namespace std;
 int counter = 0;
-pthread_mutex_t mut;
+//pthread_mutex_t mut;
+    struct sargs {
+        pthread_mutex_t m;
+        char *data = (char*) "Hello";
+    };
 
 void *helloMutex(void *args){
-
-    pthread_mutex_lock(&mut);
+    
+//    pthread_mutex_t *m = (pthread_mutex_t *) args;
+    sargs *a = (sargs *) args;
+    pthread_mutex_lock(&a->m);
 
     counter +=1;    
     cout << "Under Mutex...start:" << counter << endl;
@@ -43,7 +49,7 @@ void *helloMutex(void *args){
     sleep(5);
     cout << "Under Mutex...finished:" << counter << endl;
 
-    pthread_mutex_unlock(&mut);
+    pthread_mutex_unlock(&a->m);
     
     pthread_exit(0);
 }
@@ -55,11 +61,14 @@ int main(int argc, char** argv) {
 
     pthread_t thread1, thread2;
     int t1, t2;
+    struct sargs a;
     
-    mut = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_t args = mut;
+    a.m = mut;
 
-    t1 = pthread_create(&thread1, NULL, helloMutex, NULL);
-    t2 = pthread_create(&thread2, NULL, helloMutex, NULL);
+    t1 = pthread_create(&thread1, NULL, helloMutex, &a);
+    t2 = pthread_create(&thread2, NULL, helloMutex, &a);
     
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
