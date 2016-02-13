@@ -99,7 +99,13 @@ int main(int argc, char** argv) {
     pthread_t thread3, thread4; // array of threads better
     pthread_t thread5, thread6; // array of threads better
 //    pthread_t thread7, thread8; // array of threads better
-    int t1, t2, t3, t4, t5, t6, t7, t8, err1;
+    int t1, t2, t3, t4, t5, t6, t7, t8, err1, pid;
+    
+    FILE *f = fopen("main.pid", "w");
+    fprintf(f, "%u", pid);
+    cout << "PID:" << pid << endl;
+    fclose(f);
+    
     
     mLock = PTHREAD_MUTEX_INITIALIZER;
 //    err1 = pthread_mutex_init(&mLock, NULL);
