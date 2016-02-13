@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
     pthread_t thread1, thread2; // array of threads better
     pthread_t thread3, thread4; // array of threads better
     pthread_t thread5, thread6; // array of threads better
-//    pthread_t thread7, thread8; // array of threads better
+    pthread_t thread7, thread8; // array of threads better
     int t1, t2, t3, t4, t5, t6, t7, t8, err1, pid;
     
     FILE *f = fopen("main.pid", "w");
@@ -121,8 +121,8 @@ int main(int argc, char** argv) {
 
     t5 = pthread_create(&thread5, NULL, helloRead, NULL);
     t6 = pthread_create(&thread6, NULL, helloWrite, NULL);
-//    t7 = pthread_create(&thread7, NULL, helloRead, NULL);
-//    t8 = pthread_create(&thread8, NULL, helloRead, NULL);
+    t7 = pthread_create(&thread7, NULL, helloRead, NULL);
+    t8 = pthread_create(&thread8, NULL, helloRead, NULL);
 
     pthread_join(thread1, NULL);
 //    pthread_join(thread2, NULL);
@@ -132,8 +132,8 @@ int main(int argc, char** argv) {
 
     pthread_join(thread5, NULL);
     pthread_join(thread6, NULL);
-//    pthread_join(thread7, NULL);
-//    pthread_join(thread8, NULL);
+    pthread_join(thread7, NULL);
+    pthread_join(thread8, NULL);
 
     pthread_mutex_destroy(&mLock);
     pthread_spin_destroy(&sLock);
