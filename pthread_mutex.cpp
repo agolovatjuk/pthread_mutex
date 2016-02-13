@@ -30,20 +30,36 @@ PID запущенного процесса должен быть сохране
 #include <unistd.h>
 
 using namespace std;
-int counter = 0;
-pthread_mutex_t mut;
+int counter1 = 0;
+int counter2 = 0;
+pthread_mutex_t mLock;
+pthread_spinlock_t sLock;
 
 void *helloMutex(void *args){
 
-    pthread_mutex_lock(&mut);
+    pthread_mutex_lock(&mLock);
 
-    counter +=1;    
-    cout << "Under Mutex...start:" << counter << endl;
+    counter1 +=1;    
+    cout << "Under Mutex...start:" << counter1 << endl;
 //    for(int i=0; i<(0xFFFFFFFF);i++);
     sleep(5);
-    cout << "Under Mutex...finished:" << counter << endl;
+    cout << "Under Mutex...finished:" << counter1 << endl;
 
-    pthread_mutex_unlock(&mut);
+    pthread_mutex_unlock(&mLock);
+    
+    pthread_exit(0);
+}
+void *helloSpin(void *args){
+
+    pthread_spin_lock(&sLock);
+
+    counter2 +=1;    
+    cout << "Under SpinLock...start:" << counter2 << endl;
+//    for(int i=0; i<(0xFFFFFFFF);i++);
+    sleep(5);
+    cout << "Under SpinLock...finished:" << counter2 << endl;
+
+    pthread_spin_unlock(&sLock);
     
     pthread_exit(0);
 }
@@ -53,18 +69,27 @@ void *helloMutex(void *args){
  */
 int main(int argc, char** argv) {
 
-    pthread_t thread1, thread2;
-    int t1, t2;
+    pthread_t thread1, thread2; // array of threads better
+    pthread_t thread3, thread4; // array of threads better
+    int t1, t2, t3, t4, err1;
     
-    mut = PTHREAD_MUTEX_INITIALIZER;
-
+    mLock = PTHREAD_MUTEX_INITIALIZER;
+//    err1 = pthread_mutex_init(&mLock, NULL);
+    err1 = pthread_spin_init(&sLock, PTHREAD_PROCESS_PRIVATE);
+            
     t1 = pthread_create(&thread1, NULL, helloMutex, NULL);
     t2 = pthread_create(&thread2, NULL, helloMutex, NULL);
     
+    t3 = pthread_create(&thread1, NULL, helloSpin, NULL);
+    t4 = pthread_create(&thread1, NULL, helloSpin, NULL);
+
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
     
     cout << "Mutex hello!" << endl;
+    pthread_mutex_destroy(&mLock);
+    pthread_spin_destroy(&sLock);
+    
     return 0;
 }
 
