@@ -49,6 +49,7 @@ void *helloMutex(void *args){
     
     pthread_exit(0);
 }
+
 void *helloSpin(void *args){
 
     pthread_spin_lock(&sLock);
@@ -56,7 +57,7 @@ void *helloSpin(void *args){
     counter2 +=1;    
     cout << "Under SpinLock...start:" << counter2 << endl;
 //    for(int i=0; i<(0xFFFFFFFF);i++);
-    sleep(5);
+    sleep(2);
     cout << "Under SpinLock...finished:" << counter2 << endl;
 
     pthread_spin_unlock(&sLock);
@@ -80,11 +81,14 @@ int main(int argc, char** argv) {
     t1 = pthread_create(&thread1, NULL, helloMutex, NULL);
     t2 = pthread_create(&thread2, NULL, helloMutex, NULL);
     
-    t3 = pthread_create(&thread1, NULL, helloSpin, NULL);
-    t4 = pthread_create(&thread1, NULL, helloSpin, NULL);
+    t3 = pthread_create(&thread3, NULL, helloSpin, NULL);
+    t4 = pthread_create(&thread4, NULL, helloSpin, NULL);
 
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
+
+    pthread_join(thread3, NULL);
+    pthread_join(thread4, NULL);
     
     cout << "Mutex hello!" << endl;
     pthread_mutex_destroy(&mLock);
